@@ -360,34 +360,16 @@ DELETE FROM lnav_user_notifications WHERE id = 'org.lnav.mouse-support'
             break;
 
         case 'z':
-            if ((lnav_data.ld_zoom_level - 1) < 0) {
-                alerter::singleton().chime("maximum zoom-in level reached");
+        case 'Z': {
+            auto res = ec.execute(INTERNAL_SRC_LOC,
+                                  ch.id == 'z' ? ":zoom-to +" : ":zoom-to -");
+            if (res.isOk()) {
+                prompt.p_editor.set_inactive_value(res.unwrap());
             } else {
-                auto res = ec.execute(
-                    INTERNAL_SRC_LOC,
-                    fmt::format(
-                        FMT_STRING(":zoom-to {}"),
-                        lnav_zoom_strings[lnav_data.ld_zoom_level - 1]));
-                if (res.isOk()) {
-                    prompt.p_editor.set_inactive_value(res.unwrap());
-                }
+                alerter::singleton().chime("zoom-level reached");
             }
             break;
-
-        case 'Z':
-            if ((lnav_data.ld_zoom_level + 1) >= ZOOM_COUNT) {
-                alerter::singleton().chime("maximum zoom-out level reached");
-            } else {
-                auto res = ec.execute(
-                    INTERNAL_SRC_LOC,
-                    fmt::format(
-                        FMT_STRING(":zoom-to {}"),
-                        lnav_zoom_strings[lnav_data.ld_zoom_level + 1]));
-                if (res.isOk()) {
-                    prompt.p_editor.set_inactive_value(res.unwrap());
-                }
-            }
-            break;
+        }
 
         case 'J':
             if (tc->is_selectable()) {

@@ -3713,8 +3713,6 @@ SELECT tbl_name FROM sqlite_master WHERE sql LIKE 'CREATE VIRTUAL TABLE%'
         lnav_data.ld_log_source.set_index_delegate(new hist_index_delegate(
             lnav_data.ld_hist_source2, lnav_data.ld_views[LNV_HISTOGRAM]));
         hs.init();
-        lnav_data.ld_zoom_level = 3;
-        hs.set_time_slice(ZOOM_LEVELS[lnav_data.ld_zoom_level]);
     }
 
     for (int lpc = 0; lpc < LNV__MAX; lpc++) {
