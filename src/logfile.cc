@@ -1827,7 +1827,9 @@ logfile::rebuild_index(std::optional<ui_clock::time_point> deadline)
                             std::distance(this->begin(), curr_ll));
 
                         this->lf_bookmark_metadata[line_number].add_tag(
-                            td->ftd_name,
+                            tag_md.get_count() > 1
+                                ? td->ftd_name + tag_md.to_string()
+                                : td->ftd_name,
                             bookmark_metadata::meta_source::format);
                     }
                 }
