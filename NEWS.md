@@ -96,6 +96,13 @@ Bug Fixes:
     but they are displayed now.
   - Checks for archives with file paths that could
     escape containment.
+* The duplicate file check is less aggressive now.
+  Previously, if the first lines of logfiles matched
+  exactly, they were considered duplicates and the
+  smallest/oldest was hidden.  Now, the duplication
+  check is only done on files that contain at least
+  100 lines and those lines are checked to see if
+  they have the same timestamp/file-offset.
 
 
 ## lnav v0.14.0
