@@ -195,3 +195,7 @@ run_cap_test ${lnav_test} -n \
 run_cap_test ${lnav_test} -n \
     -c ':switch-to-view timeline' \
     ${test_dir}/logfile_cloudflare.1
+
+run_cap_test ${lnav_test} -n \
+    -c ':switch-to-view timeline' \
+    ${test_dir}/logfile_uwsgi.0
