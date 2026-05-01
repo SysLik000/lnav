@@ -140,6 +140,59 @@ TEST_CASE("humanize::try_from")
         CHECK(try_res.value() == 0.0012);
     }
     {
+        // "secs" / "sec" / "second" / "seconds" suffixes
+        for (const auto* form : {"5secs", "5sec", "5 second", "5 seconds"}) {
+            auto sf = string_fragment::from_c_str(form);
+            auto try_res = humanize::try_from<double>(sf);
+
+            CHECK(try_res.has_value());
+            CHECK(try_res.value() == 5.0);
+        }
+    }
+    {
+        // "millis" / "msec" / "msecs" / "milliseconds" word forms
+        for (const auto* form
+             : {"5 msecs", "5msec", "5 millis", "5 milliseconds"})
+        {
+            auto sf = string_fragment::from_c_str(form);
+            auto try_res = humanize::try_from<double>(sf);
+
+            CHECK(try_res.has_value());
+            CHECK(try_res.value() == 0.005);
+        }
+    }
+    {
+        // "micros" / "microsec(s)" / "microseconds" word forms
+        for (const auto* form
+             : {"68 micros", "68microsec", "68 microsecs", "68 microseconds"})
+        {
+            auto sf = string_fragment::from_c_str(form);
+            auto try_res = humanize::try_from<double>(sf);
+
+            CHECK(try_res.has_value());
+            CHECK(try_res.value() == 0.000068);
+        }
+    }
+    {
+        // "nanos" / "picos" / "femtos" word forms.  Use chained
+        // divisions to match the implementation's rounding.
+        auto ns = humanize::try_from<double>(
+            string_fragment::from_const("1000 nanos"));
+        CHECK(ns.has_value());
+        CHECK(ns.value() == 1000.0 / 1000.0 / 1000.0 / 1000.0);
+
+        auto ps = humanize::try_from<double>(
+            string_fragment::from_const("1 picos"));
+        CHECK(ps.has_value());
+        CHECK(ps.value() == 1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0);
+
+        auto fs = humanize::try_from<double>(
+            string_fragment::from_const("1 femtos"));
+        CHECK(fs.has_value());
+        CHECK(fs.value()
+              == 1.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0 / 1000.0);
+    }
+    {
         auto secs = string_fragment::from_const("1:25");
         auto try_res = humanize::try_from<double>(secs);
 
