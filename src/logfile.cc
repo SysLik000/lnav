@@ -1800,10 +1800,12 @@ logfile::rebuild_index(std::optional<ui_clock::time_point> deadline)
                 break;
             }
 #endif
-            if (this->lf_format) {
+            if (this->lf_format && li.li_utf8_scan_result.is_valid()) {
                 auto sf = sbr.to_string_fragment();
 
                 for (const auto& td : this->lf_applicable_taggers) {
+                    thread_local auto tag_md
+                        = lnav::pcre2pp::match_data::unitialized();
                     auto curr_ll = this->end() - 1;
 
                     if (td->ftd_level != LEVEL_UNKNOWN
@@ -1812,11 +1814,11 @@ logfile::rebuild_index(std::optional<ui_clock::time_point> deadline)
                         continue;
                     }
 
-                    if (td->ftd_pattern.pp_value
-                            ->find_in(sf, PCRE2_NO_UTF_CHECK)
-                            .ignore_error()
-                            .has_value())
-                    {
+                    auto match_res = td->ftd_pattern.pp_value->capture_from(sf)
+                                         .into(tag_md)
+                                         .matches(PCRE2_NO_UTF_CHECK)
+                                         .ignore_error();
+                    if (match_res) {
                         while (curr_ll->is_continued()) {
                             --curr_ll;
                         }
